@@ -1,0 +1,18 @@
+#pragma once
+
+#include <unistd.h>
+#include <sys/syscall.h>
+
+namespace bananaWebServer
+{
+    extern thread_local int t_cacheTid;
+    void cacheTid();
+    inline int tid()
+    {
+        if(__builtin_expect(t_cacheTid == 0,0))
+        {
+            cacheTid();
+        }
+        return t_cacheTid;
+    }
+}
