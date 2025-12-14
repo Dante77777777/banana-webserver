@@ -30,7 +30,7 @@ EPollPoller::~EPollPoller()
 Timestamp EPollPoller::poll(int timeoutMs, ChannelList* acticeChannels)
 {
     LOG_INFO<<"fd total count:"<<channels_.size();
-    int numEvents = ::epoll_wait(epollfd_,&*events_.begin(),InitEventListSize,timeoutMs);
+    int numEvents = ::epoll_wait(epollfd_,&*events_.begin(),static_cast<int>(events_.size()), timeoutMs);
     int saveErrno = errno;
     Timestamp now(Timestamp::now());
     if (numEvents > 0)
@@ -54,7 +54,7 @@ Timestamp EPollPoller::poll(int timeoutMs, ChannelList* acticeChannels)
             LOG_ERROR<<"EPollPoller::poll() error!";
         }
     }
-    
+    return now;
 }
 
 

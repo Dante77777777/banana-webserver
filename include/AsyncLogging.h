@@ -23,6 +23,11 @@ public:
         }
     }
     void append(const char* data, int len);
+    void start()
+    {
+        running_ = true;
+        thread_.start();
+    }
     void stop()
     {
         running_ = false;

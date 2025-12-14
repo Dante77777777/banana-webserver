@@ -1,6 +1,6 @@
 #include "LogFile.h"
 
-LogFile::LogFile(const std::string &basename, off_t rollsize, int flushInternalval = 3, int checkEveryN = 1024)
+LogFile::LogFile(const std::string &basename, off_t rollsize, int flushInternalval, int checkEveryN)
                 : basename_(basename)
                 , rollsize_(rollsize)
                 , flushInterval_(flushInternalval)

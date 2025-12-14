@@ -8,7 +8,7 @@ void LogStream::formatInteger(T num)
 {
     if(buffer_.avail() >= kMaxNumberSize)
     {
-        char* start = buffer_.cur_;
+        char* start = buffer_.current();
         char* cur = start;
         static const char* zero = digits+9;
         bool negative = (num < 0);

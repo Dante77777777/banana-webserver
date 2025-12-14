@@ -1,0 +1,6 @@
+/banana/banana-webserver/build/CMakeFiles/edit_cache.dir
+/banana/banana-webserver/build/CMakeFiles/rebuild_cache.dir
+/banana/banana-webserver/build/src/CMakeFiles/src_lib.dir
+/banana/banana-webserver/build/src/CMakeFiles/main.dir
+/banana/banana-webserver/build/src/CMakeFiles/edit_cache.dir
+/banana/banana-webserver/build/src/CMakeFiles/rebuild_cache.dir

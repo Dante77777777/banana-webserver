@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-AsyncLogging::AsyncLogging(const std::string &basename, off_t rollSize, int flushInterval = 3)
+AsyncLogging::AsyncLogging(const std::string &basename, off_t rollSize, int flushInterval)
     : flushInterval_(flushInterval)
     , running_(false)
     , basename_(basename)
@@ -29,7 +29,7 @@ void AsyncLogging::append(const char* data, int len)
     }
     else
     {
-        buffers_.push_back(currentBuffer_);
+        buffers_.push_back(std::move(currentBuffer_));
         if(nextBuffer_)
         {
             currentBuffer_ = std::move(nextBuffer_);
@@ -71,7 +71,7 @@ void AsyncLogging::threadFunc()
             }
             buffersToWrite.swap(buffers_);
         }
-        for(auto& buffer : buffers_)
+        for(auto& buffer : buffersToWrite)
         {
             outPut.append(buffer->data(),buffer->length());
         }
@@ -83,13 +83,13 @@ void AsyncLogging::threadFunc()
         {
             newBuffer1 = std::move(buffersToWrite.back());
             buffersToWrite.pop_back();
-            newBuffer1.reset();
+            newBuffer1->reset();
         }
         if(!newBuffer2)
         {
             newBuffer2 = std::move(buffersToWrite.back());
             buffersToWrite.pop_back();
-            newBuffer2.reset();
+            newBuffer2->reset();
         }
         buffersToWrite.clear();
         outPut.flush();

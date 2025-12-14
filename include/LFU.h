@@ -24,7 +24,7 @@ private:
         Value value;
         std::weak_ptr<Node> pre;
         std::shared_ptr<Node> next;
-        Node() : freq(1),pre(nullptr),next(nullptr){};
+        Node() : freq(1),next(nullptr){};
         Node(Key k,Value v) : freq(1),key(k),value(v) {}; 
     };
 
@@ -39,7 +39,7 @@ public:
         head_ = std::make_shared<Node>();
         tail_ = std::make_shared<Node>();
         head_->next = tail_;
-        tail->pre = head_;
+        tail_->pre = head_;
     }
 
     bool isEmpty()
@@ -55,25 +55,23 @@ public:
         }
         node->next = tail_;
         node->pre = tail_->pre;
-        tail_->pre->next = node;
+        tail_->pre.lock()->next = node;
         tail_->pre = node;
     }
 
     void removeNode(NodePtr node)
     {
-        if(!node || !head_ || !tail_)
-        {
-            return ;
-        }
-        node->pre->next = node->next;
-        node->next->pre = node->pre;
-        node->pre = nullptr;
+        if(!node || !head_ || !tail_) return ;
+        if(node->pre.expired() || !node->next) return ;
+        auto pre = node->pre.lock();
+        pre->next = node->next;
+        node->next->pre = pre;
         node->next = nullptr;
     }
 
     NodePtr getFirstNode() { return head_->next; };
 
-    friend class LFUCache;
+    friend class LFUCache<Key,Value>;
 };
 
 template<typename Key, typename Value>
@@ -82,12 +80,12 @@ class LFUCache : public ICachePolicy<Key,Value>
 public:
     using Node = typename FreqList<Key,Value>::Node;
     using NodePtr = std::shared_ptr<Node>;
-    using NodeMap = std::unordered_map<Key,NodePtr>
+    using NodeMap = std::unordered_map<Key,NodePtr>;
 
     LFUCache(int capacity, int maxAverageNum = 10) : capacity_(capacity), maxAverageNum_(maxAverageNum), minFreq_(INT8_MAX), curAverageNum_(0), curTotalNum_(0)
     {}
 
-    ~LFUCache() override = default{};
+    ~LFUCache() override = default;
 
     void put(Key key,Value value) override
     {
@@ -176,7 +174,7 @@ void LFUCache<Key, Value>::getInternal(NodePtr node, Value &value)
     removeFromFreqList(node);
     node->freq++;
     addToFreqList(node);
-    if(node->freq-- == minFreq_ && freqToFreqList_[node->freq].isEmpty())
+    if(node->freq-- == minFreq_ && freqToFreqList_[node->freq]->isEmpty())
     {
         minFreq_++;
     }
@@ -194,7 +192,7 @@ void LFUCache<Key, Value>::addToFreqList(NodePtr node)
     auto freq = node->freq;
     if(freqToFreqList_.find(freq) == freqToFreqList_.end())
     {
-        freqToFreqList_[freq] = new FreqList(freq);
+        freqToFreqList_[freq] = new FreqList<Key,Value>(freq);
     }
     freqToFreqList_[freq]->addNode(node);
 }
@@ -270,6 +268,7 @@ void LFUCache<Key, Value>::handleOverMaxAverageNum()
         {
             continue;
         }
+        NodePtr node = it->second;
         removeFromFreqList(it->second);
         it->second->freq -= maxAverageNum_/2;
         if (node->freq < 1) node->freq = 1;

@@ -2,12 +2,12 @@
 
 namespace bananaWebServer
 {
-    thread_local int t_cachedTid = 0;
+    thread_local int t_cacheTid = 0;
     void cacheTid()
     {
-        if (t_cachedTid == 0)
+        if (t_cacheTid == 0)
         {
-            t_cachedTid = static_cast<pid_t>(::syscall(SYS_gettid)); // Ensure syscall and SYS_gettid are defined
+            t_cacheTid = static_cast<pid_t>(::syscall(SYS_gettid)); // Ensure syscall and SYS_gettid are defined
         }
     }
 }   

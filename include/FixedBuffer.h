@@ -15,7 +15,7 @@ public:
 
     }
 
-    void append(const cahr* data, size_t len)
+    void append(const char* data, size_t len)
     {
         if(avail() > len)
         {
@@ -39,6 +39,8 @@ public:
         size_ = 0;
     }
     void bzero() { ::bzero(data_, sizeof(data_)); }
+    // 将缓冲区中的数据转换为std::string类型并返回
+    std::string toString() const { return std::string(data_, length()); }
 private:
     char data_[buffer_size];
     char* cur_;

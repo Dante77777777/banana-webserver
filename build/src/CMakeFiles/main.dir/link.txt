@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/main.dir/main.cc.o -o /banana/banana-webserver/bin/main  -Wl,-rpath,/banana/banana-webserver/lib /banana/banana-webserver/lib/libsrc_lib.so -lpthread 

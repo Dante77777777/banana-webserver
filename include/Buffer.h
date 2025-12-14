@@ -44,7 +44,7 @@ public:
     }
 
     // 把onMessage函数上报的Buffer数据 转成string类型的数据返回
-    std::string retriveAllAsString() { retriveAsString(readableBytes()); }
+    std::string retriveAllAsString() { return retriveAsString(readableBytes()); }
     std::string retriveAsString(size_t len)
     {
         std::string result(peek(),len);
